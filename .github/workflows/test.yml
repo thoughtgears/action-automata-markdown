@@ -1,8 +1,5 @@
 name: Automata Markdown
 on:
-  push:
-    paths:
-      - '**/*.md'
   pull_request:
     paths:
       - '**/*.md'
@@ -21,9 +18,10 @@ jobs:
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '\.md$' || true)
           echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
 
-      - name: Integration test 2
+      - name: Integration test
         uses: ./
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           styleguide_url: https://raw.githubusercontent.com/thoughtgears/styleguides/main/markdown.md
           markdown_files: __tests__/markdown.md
+          github_token: ${{ secrets.GITHUB_TOKEN }}

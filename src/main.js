@@ -1,6 +1,8 @@
 const { OpenAI } = require('openai')
 const core = require('@actions/core')
 const axios = require('axios')
+const github = require('@actions/github')
+const { Octokit } = require('@octokit/rest')
 
 async function fetchStyleGuide(url) {
   try {
@@ -13,12 +15,17 @@ async function fetchStyleGuide(url) {
 
 async function run() {
   const openaiApiKey = core.getInput('openai_api_key', { required: true })
+  const githubToken = core.getInput('github_token', { required: true })
   const styleguideURL = core.getInput('styleguide_url', { required: true })
   const markdownFiles = core.getInput('markdown_files', { required: true })
   const markdownFilesArray = markdownFiles.split(',').map(file => file.trim())
 
   const styleGuideContent = await fetchStyleGuide(styleguideURL)
+  const pullRequestNumber = github.context.payload.pull_request.number
+  const repository = github.context.repo
+  const pullRequestBody = github.context.payload.pull_request.body
 
+  const octokit = new Octokit({ auth: githubToken })
   const openai = new OpenAI({
     apiKey: openaiApiKey
   })
@@ -61,6 +68,7 @@ async function run() {
     })
     const data = JSON.parse(completion.choices[0].message.content)
     console.log(data)
+    console.log(pullRequestBody)
   }
 }
 

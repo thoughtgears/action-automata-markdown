@@ -38932,8 +38932,8 @@ async function run() {
         }
       ]
     })
-
-    console.log(completion.choices[0])
+    const data = JSON.parse(completion.choices[0].message.content)
+    console.log(data)
   }
 }
 
